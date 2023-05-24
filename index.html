@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quote Search</title>
+    <style>
+        .error {
+            color: red;
+            font-weight: bold;
+        }        
+    </style>
+</head>
+<body>
+    <h1>Quote Search</h1>
+    <input type="text" id="searchInput" placeholder="Enter search keyword">
+    <ul id="quoteList"></ul>
+    <script>
+        // Function to fetch quote data from the API
+        function fetchQuotes() {
+            fetch('https://dummyjson.com/quotes')
+                .then(response => response.json())
+                .then(data => {
+                // Display quotes on the page
+                displayQuotes(data);
+                })
+                .catch(error => {
+                // Display error message
+                showError('Failed to fetch quotes');
+                });
+        }
+
+    // Function to display quotes on the page
+    let arr_quote = [];
+    function displayQuotes(quotes) {
+        let quoteList = document.getElementById('quoteList');
+
+      // Clear previous results
+        quoteList.innerHTML = '';
+
+        // Iterate through each quote
+        for(let i = 0;  i < quotes.limit; i++) {
+            let listItem = document.createElement('li');
+            listItem.textContent = quotes.quotes[i].quote;
+            arr_quote.push(quotes.quotes[i].quote);
+            quoteList.appendChild(listItem);
+        }
+    }
+
+    // Function to filter quotes based on search keyword
+    function filterQuotes() {
+        let searchInput = document.getElementById('searchInput');
+        let keyword = searchInput.value;
+        let filteredQuotes = [];
+        for(let i = 0; i < arr_quote.length; i++) {
+            if(arr_quote[i].includes(keyword)) {
+                filteredQuotes.push(arr_quote[i]);
+            }
+        }
+
+        let quoteList = document.getElementById('quoteList');
+
+      // Clear previous results
+        quoteList.innerHTML = '';
+
+        // Iterate through each quote
+        for(let i = 0;  i < filteredQuotes.length; i++) {
+            let listItem = document.createElement('li');
+            listItem.textContent = filteredQuotes[i];
+            quoteList.appendChild(listItem);
+        }
+        if(filteredQuotes.length === 0) {
+            showError("There is no quote has this words");
+        }
+    }
+    // Function to display error message
+    function showError(message) {
+        let quoteList = document.getElementById('quoteList');
+        quoteList.innerHTML = '<li class="error">' + message + '</li>';
+    }
+
+    // Fetch quotes when the page loads
+    fetchQuotes();
+
+    // Add event listener to the search input
+    let searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', filterQuotes);
+    </script>
+</body>
+</html>
